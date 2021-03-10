@@ -1,26 +1,64 @@
 {
-  "name": "calworkingday",
+  "name": "kct-cdr-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Build react app with typescript.",
+  "private": true,
   "scripts": {
-    "start": "npm run build:live",
-    "build": "tsc -p .",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+    "dev": "tsc -p . && PORT=8090 node ./dist/index.js",
+    "start": "NODE_ENV=production node ./dist/index.js",
+    "log-admin-api": "sudo docker logs --tail 0 admin-api -f",
+    "docker-build-dev": "sudo docker build --tag kct-cdr-server:1.0 -f ./_docker/Dockerfile.dev .",
+    "docker-build-prod": "sudo docker build --tag kct-cdr-server:1.0 -f ./_docker/Dockerfile.prod .",
+    "docker-create": "sudo docker create --name kct-cdr-server -p 8090:8090 kct-cdr-server:1.0",
+    "docker-start": "sudo docker start kct-cdr-server",
+    "docker-log": "sudo docker logs --tail 10 kct-cdr-server -f",
+    "docker-server-log": "ssh -t bumjoo@35.194.124.10 -p 22 \"sudo docker logs --tail 10 kct-cdr-server -f\"",
+    "build": "rm -rf ./dist && tsc -p .",
+    "scp-api-server": "scp -r ./dist ./_docker build_start.sh package.json README.md bumjoo@35.194.124.10:/home/bumjoo/kct-cdr-server/ ",
+    "deploy": "yarn run build && yarn run scp-api-server ",
+    "deploy-docker": "yarn run deploy && ssh -t bumjoo@35.194.124.10 -p 22 -i \"/Users/bumjoo/.ssh/id_rsa\" \"cd kct-cdr-server && chmod 755 ./build_start.sh && ./build_start.sh\""
   },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^14.14.33",
-    "nodemon": "^2.0.7",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
-  },
+  "author": "sagolink",
+  "license": "Private",
   "dependencies": {
-    "@types/mysql": "^2.15.18",
-    "@types/node-fetch": "^2.5.8",
-    "mysql": "^2.18.1",
-    "mysql2": "^2.2.5",
-    "node-fetch": "^2.6.1"
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.5.0",
+    "i18n-js": "^3.7.1",
+    "marked": "^1.2.0",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
+    "mysql2": "^2.1.0",
+    "net": "^1.0.2",
+    "numeral": "^2.0.6",
+    "prettier": "^2.2.1",
+    "socketio": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-export-namespace-from": "^7.12.1",
+    "@babel/plugin-proposal-function-sent": "^7.12.1",
+    "@babel/plugin-proposal-numeric-separator": "^7.12.7",
+    "@babel/plugin-proposal-throw-expressions": "^7.12.1",
+    "@babel/plugin-transform-runtime": "7.12.10",
+    "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime": "7.12.5",
+    "@dooboo/eslint-config": "^0.6.21",
+    "@firebase/app-types": "^0.6.1",
+    "@types/node": "^14.14.22",
+    "abort-controller": "^3.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.19.0",
+    "expect": "^26.6.2",
+    "history": "^5.0.0",
+    "identity-obj-proxy": "^3.0.0",
+    "typescript": "^4.1.3"
+  },
+  "resolutions": {
+    "@types/react": "^16.0.40"
   }
 }
