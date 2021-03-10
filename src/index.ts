@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
 
 const connectDB = (element:HolidayData) : void => {
   const sql:string = `INSERT INTO holiday (dateName,locdate) SELECT '${element.dateName}','${element.locdate}' from dual WHERE NOT EXISTS ( SELECT * FROM holiday WHERE dateName = '${element.dateName}' AND locdate='${element.locdate}' )`;
-  console.log(sql)
+
   connection.execute(sql)
 }
 
@@ -27,6 +27,9 @@ const getItems = async (year:number,month:number) : Promise<void> => {
     const postResponse:Response = await fetch(`${apiInfo.url}?serviceKey=${apiInfo.servicekey}&solYear=${year}&solMonth=${month< 10 ? '0'+month : month}&_type=json`)
     const post:any = await postResponse.json()
     const data:HolidayData = await post.response.body.items.item
+
+    console.log(data)
+    
     if (data && Array.isArray(data)) data.forEach((element:HolidayData) => connectDB(element))
     else if (data !== undefined) connectDB(data)
 
